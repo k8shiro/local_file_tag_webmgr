@@ -1,0 +1,6 @@
+Flask
+opencv-python
+mutagen
+pymongo
+gunicorn
+gevent

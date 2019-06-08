@@ -1,0 +1,44 @@
+version: '3'
+services:
+  nginx:
+    image: nytimes/nginx-vod-module
+    volumes:
+      - ./nginx/nginx.conf:/usr/local/nginx/conf/nginx.conf
+      - ./nginx/js/:/opt/static/js
+      - ${NAS}:/opt/static/videos/mnt/nas
+    ports:
+      - 8888:80
+    #restart: always
+  flask:
+    build:
+      context: ./flask
+      args: 
+        PYTHON_VER: 3.6
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: p@ssw0rd
+    volumes:
+      - ./flask/src/:/src
+      - ${NAS}:/mnt/nas
+    ports:
+      - 9000:80
+    #command: ping 172.0.0.1
+    #restart: always
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: p@ssw0rd
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db:/data/db
+      - ./configdb:/data/configdb
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: p@ssw0rd
